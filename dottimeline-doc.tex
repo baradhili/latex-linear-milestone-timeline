@@ -1,0 +1,479 @@
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{dottimeline}
+\usepackage{booktabs}
+\usepackage{longtable}
+
+% Code listing style
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    frame=single
+}
+
+\lstset{style=mystyle}
+
+% Document info
+\title{\textbf{dottimeline} Package\\[0.5em]
+\large Horizontal Milestone Timeline for LaTeX}
+\author{Version 4.0}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Overview}
+
+The \texttt{dottimeline} package provides a simple yet powerful way to create horizontal milestone timelines in LaTeX documents. It supports both date-based positioning (for accurate timelines) and automatic spacing (for conceptual timelines).
+
+\subsection{Key Features}
+
+\begin{itemize}
+  \item \textbf{Date-based positioning}: Milestones are placed proportionally based on actual dates
+  \item \textbf{Automatic spacing}: Even distribution when dates are not specified
+  \item \textbf{Label rotation}: Support for 0°, 45°, and 90° label angles
+  \item \textbf{Per-milestone height}: Individual control over vertical spacing
+  \item \textbf{Highlighted milestones}: Special markers for important events
+  \item \textbf{Date markers}: Optional month/quarter markers on the timeline
+  \item \textbf{Customizable colors}: Change timeline and highlight colors
+\end{itemize}
+
+\section{Installation}
+
+\subsection{Option 1: Local Installation (Recommended)}
+
+Place \texttt{dottimeline.sty} in the same directory as your \texttt{.tex} file:
+
+\begin{lstlisting}[language=bash]
+project/
+├── main.tex
+└── dottimeline.sty
+\end{lstlisting}
+
+\subsection{Option 2: System-Wide Installation}
+
+\begin{lstlisting}[language=bash]
+# Find your texmf directory
+kpsewhich -var-value=TEXMFHOME
+
+# Create directory and copy file
+mkdir -p ~/texmf/tex/latex/dottimeline
+cp dottimeline.sty ~/texmf/tex/latex/dottimeline/
+
+# Update filename database
+texhash ~/texmf
+\end{lstlisting}
+
+\subsection{Required Packages}
+
+The package automatically loads:
+\begin{itemize}
+  \item \texttt{tikz}
+  \item \texttt{xifthen}
+  \item \texttt{xparse}
+  \item \texttt{kvoptions}
+  \item \texttt{pgfcalendar} (via tikz)
+\end{itemize}
+
+\section{Basic Usage}
+
+\subsection{Simple Timeline}
+
+\begin{lstlisting}
+\begin{timeline}[width=14]
+  \milestone[above]{2025-01-15}{Kickoff}
+  \milestone[below]{2025-06-30}{Midpoint}
+  \milestone[above]{2025-12-31}{Complete}
+\end{timeline}
+\end{lstlisting}
+
+\begin{center}
+\begin{timeline}[width=14,heightabove=1.2,heightbelow=1.2]
+  \milestone[above]{2025-01-15}{Kickoff}
+  \milestone[below]{2025-06-30}{Midpoint}
+  \milestone[above]{2025-12-31}{Complete}
+\end{timeline}
+\end{center}
+
+\subsection{Timeline with Date Range}
+
+\begin{lstlisting}
+\begin{timeline}[width=14,startdate=2025-01-01,enddate=2025-12-31]
+  \milestone[above]{2025-01-15}{Kickoff}
+  \milestone[below]{2025-06-30}{Midpoint}
+  \milestone[above]{2025-12-31}{Complete}
+\end{timeline}
+\end{lstlisting}
+
+\begin{center}
+\begin{timeline}[width=14,heightabove=1.2,heightbelow=1.2,startdate=2025-01-01,enddate=2025-12-31]
+  \milestone[above]{2025-01-15}{Kickoff}
+  \milestone[below]{2025-06-30}{Midpoint}
+  \milestone[above]{2025-12-31}{Complete}
+\end{timeline}
+\end{center}
+
+\section{Environment Options}
+
+All options are set in the optional argument of the \texttt{timeline} environment.
+
+\begin{longtable}{@{}llp{8cm}@{}}
+\toprule
+\textbf{Option} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{Option} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+
+\texttt{width} & \texttt{14} & Timeline width in centimeters \\
+\texttt{heightabove} & \texttt{1.5} & Default height above timeline (cm) \\
+\texttt{heightbelow} & \texttt{1.5} & Default height below timeline (cm) \\
+\texttt{dotsize} & \texttt{3pt} & Size of milestone dots \\
+\texttt{color} & \texttt{timelineblue} & Main timeline color \\
+\texttt{highlightcolor} & \texttt{timelineorange} & Color for highlighted milestones \\
+\texttt{startdate} & \texttt{empty} & Start date for date-based positioning (YYYY-MM-DD) \\
+\texttt{enddate} & \texttt{empty} & End date for date-based positioning (YYYY-MM-DD) \\
+\texttt{rotation} & \texttt{0} & Label rotation angle in degrees (0, 45, 90) \\
+\texttt{labelwidth} & \texttt{3cm} & Width of label text box \\
+\texttt{fontsize} & \texttt{\textbackslash small} & Font size for labels \\
+\bottomrule
+\end{longtable}
+
+\subsection{Color Options}
+
+You can use predefined colors or define your own:
+
+\begin{lstlisting}
+% Predefined colors
+\begin{timeline}[color=timelineblue,highlightcolor=timelineorange]
+
+% Custom colors (define in preamble)
+\definecolor{myblue}{RGB}{0,100,200}
+\begin{timeline}[color=myblue]
+\end{lstlisting}
+
+\section{Milestone Commands}
+
+\subsection{\texttt{\textbackslash milestone}}
+
+Adds a standard milestone to the timeline.
+
+\begin{lstlisting}[language=TeX]
+\milestone[position][options]{date}{label}
+\end{lstlisting}
+
+\textbf{Parameters:}
+\begin{itemize}
+  \item \texttt{position} (optional): \texttt{above} (default) or \texttt{below}
+  \item \texttt{options} (optional): Per-milestone height settings
+  \item \texttt{date}: Milestone date (YYYY-MM-DD format recommended)
+  \item \texttt{label}: Milestone text label
+\end{itemize}
+
+\textbf{Examples:}
+\begin{lstlisting}
+% Basic usage
+\milestone[above]{2025-01-15}{Kickoff Meeting}
+\milestone[below]{2025-02-20}{Review}
+
+% With custom height
+\milestone[above][heightabove=2.5]{2025-03-15}{Long Label Text}
+\milestone[below][heightbelow=2.0]{2025-04-10}{Another Label}
+\milestone[above][height=3.0]{2025-05-01}{Very Tall}
+\end{lstlisting}
+
+\subsection{\texttt{\textbackslash highlightmilestone}}
+
+Adds a highlighted milestone (different color) for important events.
+
+\begin{lstlisting}[language=TeX]
+\highlightmilestone[position][options]{date}{label}
+\end{lstlisting}
+
+\textbf{Example:}
+\begin{lstlisting}
+\highlightmilestone[above][heightabove=2.5]{2025-12-31}{Project Complete}
+\end{lstlisting}
+
+\begin{center}
+\begin{timeline}[width=10,heightabove=1.2,heightbelow=1.2,startdate=2025-01-01,enddate=2025-12-31]
+  \milestone[above]{2025-01-15}{Start}
+  \highlightmilestone[above][heightabove=2.0]{2025-06-30}{Major Milestone}
+  \milestone[below]{2025-12-31}{End}
+\end{timeline}
+\end{center}
+
+\subsection{\texttt{\textbackslash milestoneat}}
+
+Adds a milestone at a specific x-position (overrides date positioning).
+
+\begin{lstlisting}[language=TeX]
+\milestoneat[position][options]{x}{date}{label}
+\end{lstlisting}
+
+\textbf{Example:}
+\begin{lstlisting}
+\milestoneat[above]{0}{2025-01-01}{Start}
+\milestoneat[below]{7}{2025-06-30}{Middle}
+\milestoneat[above]{14}{2025-12-31}{End}
+\end{lstlisting}
+
+\subsection{\texttt{\textbackslash timelinetitle}}
+
+Adds a title above the timeline.
+
+\begin{lstlisting}[language=TeX]
+\timelinetitle{Your Timeline Title}
+\end{lstlisting}
+
+\subsection{\texttt{\textbackslash datemarker}}
+
+Adds date markers (e.g., month labels) on the timeline.
+
+\begin{lstlisting}[language=TeX]
+\datemarker{date}{label}
+\end{lstlisting}
+
+\textbf{Example:}
+\begin{lstlisting}
+\datemarker{2025-02-01}{Feb}
+\datemarker{2025-04-01}{Apr}
+\datemarker{2025-06-01}{Jun}
+\end{lstlisting}
+
+\section{Per-Milestone Options}
+
+These options can be set individually for each milestone:
+
+\begin{longtable}{@{}llp{8cm}@{}}
+\toprule
+\textbf{Option} & \textbf{Example} & \textbf{Description} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{Option} & \textbf{Example} & \textbf{Description} \\
+\midrule
+\endhead
+
+\texttt{heightabove} & \texttt{[heightabove=2.5]} & Height for above milestones only \\
+\texttt{heightbelow} & \texttt{[heightbelow=2.0]} & Height for below milestones only \\
+\texttt{height} & \texttt{[height=3.0]} & Sets both above and below heights \\
+\bottomrule
+\end{longtable}
+
+\section{Complete Examples}
+
+\subsection{Project Timeline}
+
+\begin{lstlisting}
+\begin{timeline}[
+  width=16,
+  heightabove=1.5,
+  heightbelow=1.5,
+  startdate=2025-01-26,
+  enddate=2025-12-11
+]
+  \timelinetitle{Project Timeline}
+  \milestone[above]{2025-01-26}{Kickoff}
+  \milestone[below]{2025-02-06}{Vendor Selection}
+  \milestone[above]{2025-03-15}{Requirements}
+  \milestone[below]{2025-04-12}{Prototype}
+  \highlightmilestone[above][heightabove=2.5]{2025-09-02}{User Training}
+  \milestone[below]{2025-10-20}{UAT Complete}
+  \milestone[above]{2025-12-01}{Go-Live}
+  
+  \datemarker{2025-04-01}{Apr}
+  \datemarker{2025-08-01}{Aug}
+  \datemarker{2025-12-01}{Dec}
+\end{timeline}
+\end{lstlisting}
+
+\subsection{Compact Timeline}
+
+\begin{lstlisting}
+\begin{timeline}[
+  width=16,
+  heightabove=0.8,
+  heightbelow=0.8,
+  labelwidth=2cm,
+  fontsize=\footnotesize,
+  rotation=45,
+  startdate=2025-01-01,
+  enddate=2025-12-31
+]
+  \milestone[above]{2025-01-15}{Phase 1}
+  \milestone[below]{2025-02-20}{Review}
+  \milestone[above]{2025-03-31}{Milestone 1}
+  \milestone[below]{2025-05-10}{Phase 2}
+  \milestone[above]{2025-06-30}{Midpoint}
+  \milestone[below]{2025-08-15}{Milestone 2}
+  \milestone[above]{2025-10-01}{Phase 3}
+  \milestone[below]{2025-12-31}{Complete}
+\end{timeline}
+\end{lstlisting}
+
+\subsection{Vertical Labels}
+
+\begin{lstlisting}
+\begin{timeline}[
+  width=16,
+  rotation=90,
+  heightabove=1.0,
+  heightbelow=1.0,
+  labelwidth=1.5cm,
+  startdate=2025-01-01,
+  enddate=2025-12-31
+]
+  \milestone[above]{2025-01-15}{Kickoff}
+  \milestone[below]{2025-03-31}{Phase 1}
+  \milestone[above]{2025-06-30}{Phase 2}
+  \milestone[below]{2025-09-30}{Phase 3}
+  \milestone[above]{2025-12-31}{Complete}
+\end{timeline}
+\end{lstlisting}
+
+\section{Tips and Best Practices}
+
+\subsection{Avoiding Label Overlaps}
+
+\begin{itemize}
+  \item Use \texttt{rotation=45} for dense timelines
+  \item Increase \texttt{heightabove}/\texttt{heightbelow} for long labels
+  \item Reduce \texttt{labelwidth} for shorter text boxes
+  \item Use \texttt{fontsize=\textbackslash footnotesize} for compact layouts
+\end{itemize}
+
+\subsection{Date Format}
+
+\begin{itemize}
+  \item \textbf{Recommended}: \texttt{YYYY-MM-DD} (ISO format)
+  \item \textbf{Alternative}: \texttt{DD-Mon-YYYY} (e.g., 26-Jan-2025)
+  \item \textbf{Short}: \texttt{DD-Mon} (uses current year)
+\end{itemize}
+
+\subsection{Color Customization}
+
+\begin{lstlisting}
+% In preamble
+\definecolor{myblue}{RGB}{0,100,200}
+\definecolor{myorange}{RGB}{255,150,50}
+
+% In timeline
+\begin{timeline}[color=myblue,highlightcolor=myorange]
+\end{lstlisting}
+
+\subsection{Multiple Timelines}
+
+You can include multiple timelines in one document:
+
+\begin{lstlisting}
+% Timeline 1
+\begin{timeline}[width=14,startdate=2025-01-01,enddate=2025-06-30]
+  ...
+\end{timeline}
+
+\vspace{2cm}
+
+% Timeline 2
+\begin{timeline}[width=14,startdate=2025-07-01,enddate=2025-12-31]
+  ...
+\end{timeline}
+\end{lstlisting}
+
+\section{Troubleshooting}
+
+\subsection{Common Errors}
+
+\begin{longtable}{@{}p{4cm}p{8cm}@{}}
+\toprule
+\textbf{Error} & \textbf{Solution} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{Error} & \textbf{Solution} \\
+\midrule
+\endhead
+
+\texttt{Dimension too large} & Use TeX count registers (fixed in v3.0+) \\
+\texttt{Missing number} & Ensure date format is YYYY-MM-DD \\
+\texttt{Undefined control sequence} & Check all required packages are installed \\
+\texttt{Package hangs} & Avoid nested optional arguments (fixed in v3.1+) \\
+\bottomrule
+\end{longtable}
+
+\subsection{Compilation Issues}
+
+\begin{itemize}
+  \item Run \texttt{pdflatex} twice for proper positioning
+  \item Clear auxiliary files if errors persist: \texttt{rm *.aux *.log}
+  \item Ensure \texttt{dottimeline.sty} is in the correct location
+\end{itemize}
+
+\section{Version History}
+
+\begin{longtable}{@{}llp{8cm}@{}}
+\toprule
+\textbf{Version} & \textbf{Date} & \textbf{Changes} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{Version} & \textbf{Date} & \textbf{Changes} \\
+\midrule
+\endhead
+
+v1.0 & 2026-02-25 & Initial release with basic timeline \\
+v1.1 & 2026-02-25 & Fixed tabular/minipage issues \\
+v1.2 & 2026-02-25 & Improved line break handling \\
+v2.0 & 2026-02-25 & Added date-based positioning \\
+v2.1 & 2026-02-25 & Fixed pgfcalendar library loading \\
+v2.2 & 2026-02-25 & Fixed dimension overflow errors \\
+v2.3 & 2026-02-25 & Fixed counter/register mixing \\
+v3.0 & 2026-02-25 & Added rotation and compact options \\
+v3.1 & 2026-02-25 & Fixed hanging issues, simplified API \\
+v3.2 & 2026-02-25 & Fixed rotate origin syntax error \\
+v4.0 & 2026-02-25 & Added per-milestone height control \\
+\bottomrule
+\end{longtable}
+
+\section{License}
+
+This package is free to use and modify. No warranty is provided.
+
+\section{Support}
+
+For issues or feature requests, please check the package documentation or consult LaTeX community forums.
+
+\end{document}
