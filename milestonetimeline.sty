@@ -1,0 +1,262 @@
+%%
+%% This is file `milestonetimeline.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% milestonetimeline.dtx  (with options: `package')
+%% 
+%% This is a generated file.
+%% 
+%% Copyright (C) 2026 by Bret Watson <bret@ticm.com>
+%% 
+%% This file is part of the milestonetimeline package.
+%% 
+%% The milestonetimeline package is free software: you can redistribute it
+%% and/or modify it under the terms of the GNU General Public License
+%% as published by the Free Software Foundation, either version 3 of
+%% the License, or (at your option) any later version.
+%% 
+%% The milestonetimeline package is distributed in the hope that it will be
+%% useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+%% of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU General Public License for more details.
+%% 
+%% You should have received a copy of the GNU General Public License
+%% along with the milestonetimeline package.  If not, see
+%% <https://www.gnu.org/licenses/>.
+%% 
+%% This work consists of all files listed in manifest.txt.
+%% 
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{milestonetimeline}
+    [2026/02/25 v1.0 Milestone Timeline Package]
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{milestonetimeline}
+    [2026/02/25 v1.0 Milestone Timeline Package]
+
+
+\RequirePackage{tikz}
+\RequirePackage{xifthen}
+\RequirePackage{xparse}
+\RequirePackage{kvoptions}
+\usetikzlibrary{calendar}
+
+\SetupKeyvalOptions{
+  family=milestonetimeline,
+  prefix=mtl@
+}
+
+\DeclareStringOption[14]{width}
+\DeclareStringOption[1.5]{heightabove}
+\DeclareStringOption[1.5]{heightbelow}
+\DeclareStringOption[3pt]{dotsize}
+\DeclareStringOption[timelineblue]{color}
+\DeclareStringOption[timelineorange]{highlightcolor}
+\DeclareStringOption[]{startdate}
+\DeclareStringOption[]{enddate}
+\DeclareStringOption[0]{rotation}
+\DeclareStringOption[3cm]{labelwidth}
+\DeclareStringOption[\small]{fontsize}
+
+\definecolor{timelineblue}{RGB}{65, 105, 165}
+\definecolor{timelineorange}{RGB}{205, 100, 50}
+\definecolor{timelinegray}{RGB}{200, 200, 200}
+
+\ProcessKeyvalOptions*
+
+\newcounter{mtl@milestonepos}
+
+\newcount\mtl@startjulian
+\newcount\mtl@endjulian
+\newcount\mtl@milestonejulian
+\newcount\mtl@tempjulian
+\newcount\mtl@totaldays
+\newcount\mtl@markerjulian
+
+\newcommand{\mtl@milestone@heightabove}{\mtl@heightabove}
+\newcommand{\mtl@milestone@heightbelow}{\mtl@heightbelow}
+
+\NewDocumentEnvironment{timeline}{O{}}
+  {%
+    % Process local options
+    \setkeys{milestonetimeline}{#1}
+
+    % Initialize per-milestone heights to defaults
+    \edef\mtl@milestone@heightabove{\mtl@heightabove}
+    \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+
+    \begin{tikzpicture}[
+      every node/.style={font=\sffamily},
+    ]
+    % Draw main timeline
+    \draw[thick,\mtl@color!50] (0,0) -- (\mtl@width,0);
+    \setcounter{mtl@milestonepos}{0}
+
+    % Initialize total days
+    \mtl@totaldays=0
+
+    % Calculate date range if provided
+    \ifthenelse{\equal{\mtl@startdate}{}}{}{%
+      \ifthenelse{\equal{\mtl@enddate}{}}{}{%
+        \pgfcalendardatetojulian{\mtl@startdate}{\mtl@startjulian}
+        \pgfcalendardatetojulian{\mtl@enddate}{\mtl@endjulian}
+        \mtl@totaldays=\mtl@endjulian
+        \advance\mtl@totaldays by -\mtl@startjulian
+      }%
+    }%
+  }
+  {
+    \end{tikzpicture}
+  }
+
+\newcommand{\mtl@calculateposition}[2]{%
+  % #1 = milestone date
+  % #2 = output macro (x position)
+  \ifnum\mtl@totaldays>0
+    % Date-based positioning
+    \pgfcalendardatetojulian{#1}{\mtl@milestonejulian}
+    \mtl@tempjulian=\mtl@milestonejulian
+    \advance\mtl@tempjulian by -\mtl@startjulian
+    % Now use pgfmath with the smaller relative day number
+    \pgfmathsetmacro{#2}{(\the\mtl@tempjulian / \the\mtl@totaldays) * \mtl@width}
+    % Ensure position is within bounds
+    \ifdim#2pt<0pt \def#2{0}\fi
+    \ifdim#2pt>\mtl@width pt \edef#2{\mtl@width}\fi
+  \else
+    % Automatic positioning (fallback)
+    \stepcounter{mtl@milestonepos}
+    \pgfmathsetmacro{#2}{(\themtl@milestonepos-1)*(\mtl@width/12)}
+  \fi
+}
+
+\newcommand{\mtl@drawmilestoneabove}[3]{%
+  % #1 = x position
+  % #2 = date
+  % #3 = label
+  \draw (#1,0.1) -- (#1,-0.1);
+  \fill[\mtl@color] (#1,\mtl@milestone@heightabove) circle (\mtl@dotsize);
+  \draw (#1,\mtl@milestone@heightabove) -- (#1,0.1);
+  \node[anchor=south west,align=left,xshift=5pt,inner sep=1pt,rotate=\mtl@rotation] at (#1,\mtl@milestone@heightabove)
+    {\begin{minipage}{\mtl@labelwidth}\mtl@fontsize\textbf{#3}\\[2pt]#2\end{minipage}};
+  % Reset to default for next milestone
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+}
+
+\newcommand{\mtl@drawmilestonebelow}[3]{%
+  % #1 = x position
+  % #2 = date
+  % #3 = label
+  \draw (#1,0.1) -- (#1,-0.1);
+  \fill[\mtl@color] (#1,-\mtl@milestone@heightbelow) circle (\mtl@dotsize);
+  \draw (#1,-\mtl@milestone@heightbelow) -- (#1,-0.1);
+  \node[anchor=north west,align=left,xshift=5pt,inner sep=1pt,rotate=\mtl@rotation] at (#1,-\mtl@milestone@heightbelow)
+    {\begin{minipage}{\mtl@labelwidth}\mtl@fontsize#3\\[2pt]#2\end{minipage}};
+  % Reset to default for next milestone
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+}
+
+\newcommand{\mtl@drawhighlightabove}[3]{%
+  % #1 = x position
+  % #2 = date
+  % #3 = label
+  \draw (#1,0.1) -- (#1,-0.1);
+  \fill[\mtl@highlightcolor] (#1,\mtl@milestone@heightabove) circle (\mtl@dotsize);
+  \draw (#1,\mtl@milestone@heightabove) -- (#1,0.1);
+  \node[anchor=south west,align=left,xshift=5pt,inner sep=1pt,rotate=\mtl@rotation] at (#1,\mtl@milestone@heightabove)
+    {\begin{minipage}{\mtl@labelwidth}\mtl@fontsize\textbf{#3}\\[2pt]#2\end{minipage}};
+  % Reset to default for next milestone
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+}
+
+\newcommand{\mtl@drawhighlightbelow}[3]{%
+  % #1 = x position
+  % #2 = date
+  % #3 = label
+  \draw (#1,0.1) -- (#1,-0.1);
+  \fill[\mtl@highlightcolor] (#1,-\mtl@milestone@heightbelow) circle (\mtl@dotsize);
+  \draw (#1,-\mtl@milestone@heightbelow) -- (#1,-0.1);
+  \node[anchor=north west,align=left,xshift=5pt,inner sep=1pt,rotate=\mtl@rotation] at (#1,-\mtl@milestone@heightbelow)
+    {\begin{minipage}{\mtl@labelwidth}\mtl@fontsize#3\\[2pt]#2\end{minipage}};
+  % Reset to default for next milestone
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+}
+
+\define@key{mtlmilestone}{heightabove}{\edef\mtl@milestone@heightabove{#1}}
+\define@key{mtlmilestone}{heightbelow}{\edef\mtl@milestone@heightbelow{#1}}
+\define@key{mtlmilestone}{height}{\edef\mtl@milestone@heightabove{#1}\edef\mtl@milestone@heightbelow{#1}}
+
+\NewDocumentCommand{\milestone}{O{above}O{}mm}{%
+  % Reset to defaults first
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+  % Apply per-milestone options
+  \setkeys{mtlmilestone}{#2}
+
+  \mtl@calculateposition{#3}{\mtl@xpos}
+
+  \ifthenelse{\equal{#1}{above}}
+    {%
+      \mtl@drawmilestoneabove{\mtl@xpos}{#3}{#4}%
+    }
+    {%
+      \mtl@drawmilestonebelow{\mtl@xpos}{#3}{#4}%
+    }
+}
+
+\NewDocumentCommand{\highlightmilestone}{O{above}O{}mm}{%
+  % Reset to defaults first
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+  % Apply per-milestone options
+  \setkeys{mtlmilestone}{#2}
+
+  \mtl@calculateposition{#3}{\mtl@xpos}
+
+  \ifthenelse{\equal{#1}{above}}
+    {%
+      \mtl@drawhighlightabove{\mtl@xpos}{#3}{#4}%
+    }
+    {%
+      \mtl@drawhighlightbelow{\mtl@xpos}{#3}{#4}%
+    }
+}
+
+\NewDocumentCommand{\milestoneat}{O{above}O{}mmm}{%
+  % Reset to defaults first
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+  % Apply per-milestone options
+  \setkeys{mtlmilestone}{#2}
+
+  \ifthenelse{\equal{#1}{above}}
+    {%
+      \mtl@drawmilestoneabove{#3}{#4}{#5}%
+    }
+    {%
+      \mtl@drawmilestonebelow{#3}{#4}{#5}%
+    }
+}
+
+\NewDocumentCommand{\timelinetitle}{m}{%
+  \node[anchor=south,font=\sffamily\Large] at (\mtl@width/2,\mtl@heightabove+1) {#1};
+}
+
+\NewDocumentCommand{\datemarker}{mm}{%
+  \ifnum\mtl@totaldays>0
+    \pgfcalendardatetojulian{#1}{\mtl@markerjulian}
+    \mtl@tempjulian=\mtl@markerjulian
+    \advance\mtl@tempjulian by -\mtl@startjulian
+    \pgfmathsetmacro{\mtl@markerpos}{(\the\mtl@tempjulian / \the\mtl@totaldays) * \mtl@width}
+    \draw (\mtl@markerpos,0.05) -- (\mtl@markerpos,-0.05);
+    \node[anchor=north,font=\sffamily\small,text=\mtl@color!70] at (\mtl@markerpos,-0.1) {#2};
+  \fi
+}
+
+\endinput
+%%
+%% End of file `milestonetimeline.sty'.

@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage{milestonetimeline}
+
+\begin{document}
+
+\section*{Test: Standard Timeline}
+\begin{timeline}[width=14]
+  \milestone[above]{2025-01-15}{Test 1}
+  \milestone[below]{2025-06-30}{Test 2}
+  \milestone[above]{2025-12-31}{Test 3}
+\end{timeline}
+
+\section*{Test: Date-Based Positioning}
+\begin{timeline}[width=14,startdate=2025-01-01,enddate=2025-12-31]
+  \milestone[above]{2025-01-01}{Start}
+  \milestone[below]{2025-06-30}{Middle}
+  \milestone[above]{2025-12-31}{End}
+\end{timeline}
+
+\section*{Test: Rotation}
+\begin{timeline}[width=14,rotation=45,heightabove=1,heightbelow=1]
+  \milestone[above]{2025-01-15}{Rotated 1}
+  \milestone[below]{2025-06-30}{Rotated 2}
+  \milestone[above]{2025-12-31}{Rotated 3}
+\end{timeline}
+
+\section*{Test: Variable Heights}
+\begin{timeline}[width=14,heightabove=1,heightbelow=1]
+  \milestone[above]{2025-01-15}{Standard}
+  \milestone[below][heightbelow=2]{2025-03-15}{Tall}
+  \milestone[above][heightabove=2.5]{2025-06-30}{Taller}
+  \highlightmilestone[below]{2025-12-31}{Highlight}
+\end{timeline}
+
+\end{document}

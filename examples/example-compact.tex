@@ -1,0 +1,25 @@
+\documentclass{article}
+\usepackage{milestonetimeline}
+
+\begin{document}
+\begin{timeline}[
+  width=16,
+  heightabove=0.8,
+  heightbelow=0.8,
+  labelwidth=2cm,
+  fontsize=\footnotesize,
+  rotation=45,
+  startdate=2025-01-01,
+  enddate=2025-12-31
+]
+  \timelinetitle{Compact Timeline}
+  \milestone[above]{2025-01-15}{Phase 1}
+  \milestone[below]{2025-02-20}{Review}
+  \milestone[above]{2025-03-31}{Milestone 1}
+  \milestone[below]{2025-05-10}{Phase 2}
+  \milestone[above]{2025-06-30}{Midpoint}
+  \milestone[below]{2025-08-15}{Milestone 2}
+  \milestone[above]{2025-10-01}{Phase 3}
+  \milestone[below]{2025-12-31}{Complete}
+\end{timeline}
+\end{document}

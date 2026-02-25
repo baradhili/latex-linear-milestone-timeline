@@ -1,0 +1,630 @@
+% \iffalse meta-comment
+%
+% Copyright (C) 2026 by Bret Watson <bret@ticm.com>
+% ========================================================
+%
+% This file is part of the milestonetimeline package.
+%
+% The milestonetimeline package is free software: you can redistribute it
+% and/or modify it under the terms of the GNU General Public License
+% as published by the Free Software Foundation, either version 3 of
+% the License, or (at your option) any later version.
+%
+% The milestonetimeline package is distributed in the hope that it will be
+% useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+% of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with the milestonetimeline package.  If not, see
+% <https://www.gnu.org/licenses/>.
+%
+% This work consists of all files listed in manifest.txt.
+%
+% \fi
+%
+% \iffalse
+%<*driver>
+\ProvidesFile{milestonetimeline.dtx}
+%</driver>
+%<package>\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+%<package>\ProvidesPackage{milestonetimeline}
+%<*package>
+    [2026/02/25 v1.0 Milestone Timeline Package]
+%</package>
+%
+%<*driver>
+\documentclass{ltxdoc}
+\usepackage{milestonetimeline}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\begin{document}
+  \DocInput{milestonetimeline.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+% \CheckSum{0}
+%
+% \CharacterTable
+%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%   Digits        \0\1\2\3\4\5\6\7\8\9
+%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%   Dollar        \$     Percent       \%     Ampersand     \&
+%   Acute accent  \'     Left paren    \(     Right paren   \)
+%   Asterisk      \*     Plus          \+     Comma         \,
+%   Minus         \-     Point         \.     Solidus       \/
+%   Colon         \:     Semicolon     \;     Less than     \<
+%   Equals        \=     Greater than  \>     Question mark \?
+%   Commercial at \@     Left bracket  \[     Backslash     \\
+%   Right bracket \]     Circumflex    \^     Underscore    \_
+%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%   Right brace   \}     Tilde         \~}
+%
+%
+% \changes{v1.0}{2026/02/25}{Initial public release on CTAN}
+% \changes{v0.9}{2026/02/25}{Added per-milestone height control}
+% \changes{v0.8}{2026/02/25}{Fixed rotate origin syntax error}
+% \changes{v0.7}{2026/02/25}{Fixed hanging issues, simplified API}
+% \changes{v0.6}{2026/02/25}{Added rotation and compact options}
+% \changes{v0.5}{2026/02/25}{Fixed counter/register mixing}
+% \changes{v0.4}{2026/02/25}{Fixed dimension overflow errors}
+% \changes{v0.3}{2026/02/25}{Fixed pgfcalendar library loading}
+% \changes{v0.2}{2026/02/25}{Added date-based positioning}
+% \changes{v0.1}{2026/02/25}{Initial development version}
+%
+% \GetFileInfo{milestonetimeline.dtx}
+%
+% \title{The \textsf{milestonetimeline} package\thanks{This document
+%   corresponds to \textsf{milestonetimeline}~\fileversion, dated \filedate.}}
+% \author{Your Name \\ \texttt{your.email@example.com}}
+% \maketitle
+%
+% \tableofcontents
+%
+% \section{Introduction}
+%
+% The \textsf{milestonetimeline} package provides a simple yet powerful way to create
+% horizontal milestone timelines in LaTeX documents. It supports both date-based
+% positioning (for accurate timelines) and automatic spacing (for conceptual timelines).
+%
+% \subsection{Key Features}
+%
+% \begin{itemize}
+%   \item \textbf{Date-based positioning}: Milestones are placed proportionally based on actual dates
+%   \item \textbf{Automatic spacing}: Even distribution when dates are not specified
+%   \item \textbf{Label rotation}: Support for 0°, 45°, and 90° label angles
+%   \item \textbf{Per-milestone height}: Individual control over vertical spacing
+%   \item \textbf{Highlighted milestones}: Special markers for important events
+%   \item \textbf{Date markers}: Optional month/quarter markers on the timeline
+%   \item \textbf{Customizable colors}: Change timeline and highlight colors
+% \end{itemize}
+%
+% \section{Installation}
+%
+% \subsection{Option 1: CTAN (Recommended)}
+%
+% Once published on CTAN, install via your TeX distribution:
+%
+% \begin{verbatim}
+% tlmgr install milestonetimeline  # TeX Live
+% \end{verbatim}
+%
+% \subsection{Option 2: Manual Installation}
+%
+% \begin{verbatim}
+% # Generate .sty from .dtx
+% latex milestonetimeline.ins
+%
+% # Move to your TeX directory
+% mkdir -p ~/texmf/tex/latex/milestonetimeline
+% mv milestonetimeline.sty ~/texmf/tex/latex/milestonetimeline/
+%
+% # Update filename database
+% texhash ~/texmf
+% \end{verbatim}
+%
+% \subsection{Required Packages}
+%
+% The package automatically loads:
+% \begin{itemize}
+%   \item \texttt{tikz}
+%   \item \texttt{xifthen}
+%   \item \texttt{xparse}
+%   \item \texttt{kvoptions}
+%   \item \texttt{pgfcalendar} (via tikz)
+% \end{itemize}
+%
+% \section{Basic Usage}
+%
+% \subsection{Simple Timeline}
+%
+% \begin{verbatim}
+% \begin{timeline}[width=14]
+%   \milestone[above]{2025-01-15}{Kickoff}
+%   \milestone[below]{2025-06-30}{Midpoint}
+%   \milestone[above]{2025-12-31}{Complete}
+% \end{timeline}
+% \end{verbatim}
+%
+% \subsection{Timeline with Date Range}
+%
+% \begin{verbatim}
+% \begin{timeline}[width=14,startdate=2025-01-01,enddate=2025-12-31]
+%   \milestone[above]{2025-01-15}{Kickoff}
+%   \milestone[below]{2025-06-30}{Midpoint}
+%   \milestone[above]{2025-12-31}{Complete}
+% \end{timeline}
+% \end{verbatim}
+%
+% \section{Environment Options}
+%
+% All options are set in the optional argument of the \texttt{timeline} environment.
+%
+% \begin{description}
+%   \item[\texttt{width}] (default: \texttt{14}) Timeline width in centimeters
+%   \item[\texttt{heightabove}] (default: \texttt{1.5}) Default height above timeline (cm)
+%   \item[\texttt{heightbelow}] (default: \texttt{1.5}) Default height below timeline (cm)
+%   \item[\texttt{dotsize}] (default: \texttt{3pt}) Size of milestone dots
+%   \item[\texttt{color}] (default: \texttt{timelineblue}) Main timeline color
+%   \item[\texttt{highlightcolor}] (default: \texttt{timelineorange}) Color for highlighted milestones
+%   \item[\texttt{startdate}] (default: empty) Start date for date-based positioning (YYYY-MM-DD)
+%   \item[\texttt{enddate}] (default: empty) End date for date-based positioning (YYYY-MM-DD)
+%   \item[\texttt{rotation}] (default: \texttt{0}) Label rotation angle in degrees (0, 45, 90)
+%   \item[\texttt{labelwidth}] (default: \texttt{3cm}) Width of label text box
+%   \item[\texttt{fontsize}] (default: \texttt{\textbackslash small}) Font size for labels
+% \end{description}
+%
+% \section{Milestone Commands}
+%
+% \subsection{\texttt{\textbackslash milestone}}
+%
+% Adds a standard milestone to the timeline.
+%
+% \begin{verbatim}
+% \milestone[position][options]{date}{label}
+% \end{verbatim}
+%
+% \textbf{Parameters:}
+% \begin{itemize}
+%   \item \texttt{position} (optional): \texttt{above} (default) or \texttt{below}
+%   \item \texttt{options} (optional): Per-milestone height settings
+%   \item \texttt{date}: Milestone date (YYYY-MM-DD format recommended)
+%   \item \texttt{label}: Milestone text label
+% \end{itemize}
+%
+% \textbf{Examples:}
+% \begin{verbatim}
+% % Basic usage
+% \milestone[above]{2025-01-15}{Kickoff Meeting}
+% \milestone[below]{2025-02-20}{Review}
+%
+% % With custom height
+% \milestone[above][heightabove=2.5]{2025-03-15}{Long Label Text}
+% \milestone[below][heightbelow=2.0]{2025-04-10}{Another Label}
+% \milestone[above][height=3.0]{2025-05-01}{Very Tall}
+% \end{verbatim}
+%
+% \subsection{\texttt{\textbackslash highlightmilestone}}
+%
+% Adds a highlighted milestone (different color) for important events.
+%
+% \begin{verbatim}
+% \highlightmilestone[position][options]{date}{label}
+% \end{verbatim}
+%
+% \subsection{\texttt{\textbackslash milestoneat}}
+%
+% Adds a milestone at a specific x-position (overrides date positioning).
+%
+% \begin{verbatim}
+% \milestoneat[position][options]{x}{date}{label}
+% \end{verbatim}
+%
+% \subsection{\texttt{\textbackslash timelinetitle}}
+%
+% Adds a title above the timeline.
+%
+% \begin{verbatim}
+% \timelinetitle{Your Timeline Title}
+% \end{verbatim}
+%
+% \subsection{\texttt{\textbackslash datemarker}}
+%
+% Adds date markers (e.g., month labels) on the timeline.
+%
+% \begin{verbatim}
+% \datemarker{date}{label}
+% \end{verbatim}
+%
+% \section{Per-Milestone Options}
+%
+% These options can be set individually for each milestone:
+%
+% \begin{description}
+%   \item[\texttt{heightabove}] Height for above milestones only
+%   \item[\texttt{heightbelow}] Height for below milestones only
+%   \item[\texttt{height}] Sets both above and below heights
+% \end{description}
+%
+% \section{Complete Examples}
+%
+% \subsection{Project Timeline}
+%
+% \begin{verbatim}
+% \begin{timeline}[
+%   width=16,
+%   heightabove=1.5,
+%   heightbelow=1.5,
+%   startdate=2025-01-26,
+%   enddate=2025-12-11
+% ]
+%   \timelinetitle{Project Timeline}
+%   \milestone[above]{2025-01-26}{Kickoff}
+%   \milestone[below]{2025-02-06}{Vendor Selection}
+%   \milestone[above]{2025-03-15}{Requirements}
+%   \milestone[below]{2025-04-12}{Prototype}
+%   \highlightmilestone[above][heightabove=2.5]{2025-09-02}{User Training}
+%   \milestone[below]{2025-10-20}{UAT Complete}
+%   \milestone[above]{2025-12-01}{Go-Live}
+%   
+%   \datemarker{2025-04-01}{Apr}
+%   \datemarker{2025-08-01}{Aug}
+%   \datemarker{2025-12-01}{Dec}
+% \end{timeline}
+% \end{verbatim}
+%
+% \subsection{Compact Timeline}
+%
+% \begin{verbatim}
+% \begin{timeline}[
+%   width=16,
+%   heightabove=0.8,
+%   heightbelow=0.8,
+%   labelwidth=2cm,
+%   fontsize=\footnotesize,
+%   rotation=45,
+%   startdate=2025-01-01,
+%   enddate=2025-12-31
+% ]
+%   \milestone[above]{2025-01-15}{Phase 1}
+%   \milestone[below]{2025-02-20}{Review}
+%   \milestone[above]{2025-03-31}{Milestone 1}
+%   \milestone[below]{2025-05-10}{Phase 2}
+%   \milestone[above]{2025-06-30}{Midpoint}
+%   \milestone[below]{2025-08-15}{Milestone 2}
+%   \milestone[above]{2025-10-01}{Phase 3}
+%   \milestone[below]{2025-12-31}{Complete}
+% \end{timeline}
+% \end{verbatim}
+%
+% \section{Troubleshooting}
+%
+% \subsection{Common Errors}
+%
+% \begin{description}
+%   \item[\texttt{Dimension too large}] Use TeX count registers (fixed in v0.4+)
+%   \item[\texttt{Missing number}] Ensure date format is YYYY-MM-DD
+%   \item[\texttt{Undefined control sequence}] Check all required packages are installed
+%   \item[\texttt{Package hangs}] Avoid nested optional arguments (fixed in v0.7+)
+% \end{description}
+%
+% \subsection{Compilation Issues}
+%
+% \begin{itemize}
+%   \item Run \texttt{pdflatex} twice for proper positioning
+%   \item Clear auxiliary files if errors persist
+%   \item Ensure \texttt{milestonetimeline.sty} is in the correct location
+% \end{itemize}
+%
+% \section{License}
+%
+% This package is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% \StopEventually{\PrintIndex}
+%
+% \section{Implementation}
+%
+% \subsection{Package Setup}
+%
+%    \begin{macrocode}
+%<*package>
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{milestonetimeline}
+    [2026/02/25 v1.0 Milestone Timeline Package]
+
+% ============================================================================
+% Copyright (C) 2026 by Your Name <your.email@example.com>
+%
+% This file is part of the milestonetimeline package.
+%
+% The milestonetimeline package is free software: you can redistribute it
+% and/or modify it under the terms of the GNU General Public License
+% as published by the Free Software Foundation, either version 3 of
+% the License, or (at your option) any later version.
+%
+% The milestonetimeline package is distributed in the hope that it will be
+% useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+% of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with the milestonetimeline package.  If not, see
+% <https://www.gnu.org/licenses/>.
+% ============================================================================
+
+% Required packages
+\RequirePackage{tikz}
+\RequirePackage{xifthen}
+\RequirePackage{xparse}
+\RequirePackage{kvoptions}
+\usetikzlibrary{calendar}
+
+% Setup key-value options
+\SetupKeyvalOptions{
+  family=milestonetimeline,
+  prefix=mtl@
+}
+
+% Define package options
+\DeclareStringOption[14]{width}
+\DeclareStringOption[1.5]{heightabove}
+\DeclareStringOption[1.5]{heightbelow}
+\DeclareStringOption[3pt]{dotsize}
+\DeclareStringOption[timelineblue]{color}
+\DeclareStringOption[timelineorange]{highlightcolor}
+\DeclareStringOption[]{startdate}
+\DeclareStringOption[]{enddate}
+\DeclareStringOption[0]{rotation}
+\DeclareStringOption[3cm]{labelwidth}
+\DeclareStringOption[\small]{fontsize}
+
+% Define colors
+\definecolor{timelineblue}{RGB}{65, 105, 165}
+\definecolor{timelineorange}{RGB}{205, 100, 50}
+\definecolor{timelinegray}{RGB}{200, 200, 200}
+
+\ProcessKeyvalOptions*
+
+% Counter for automatic positioning
+\newcounter{mtl@milestonepos}
+
+% TeX count registers for Julian day calculations
+\newcount\mtl@startjulian
+\newcount\mtl@endjulian
+\newcount\mtl@milestonejulian
+\newcount\mtl@tempjulian
+\newcount\mtl@totaldays
+\newcount\mtl@markerjulian
+
+% Per-milestone height variables
+\newcommand{\mtl@milestone@heightabove}{\mtl@heightabove}
+\newcommand{\mtl@milestone@heightbelow}{\mtl@heightbelow}
+
+%    \end{macrocode}
+%
+% \subsection{Timeline Environment}
+%
+%    \begin{macrocode}
+% Timeline environment
+\NewDocumentEnvironment{timeline}{O{}}
+  {%
+    % Process local options
+    \setkeys{milestonetimeline}{#1}
+    
+    % Initialize per-milestone heights to defaults
+    \edef\mtl@milestone@heightabove{\mtl@heightabove}
+    \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+    
+    \begin{tikzpicture}[
+      every node/.style={font=\sffamily},
+    ]
+    % Draw main timeline
+    \draw[thick,\mtl@color!50] (0,0) -- (\mtl@width,0);
+    \setcounter{mtl@milestonepos}{0}
+    
+    % Initialize total days
+    \mtl@totaldays=0
+    
+    % Calculate date range if provided
+    \ifthenelse{\equal{\mtl@startdate}{}}{}{%
+      \ifthenelse{\equal{\mtl@enddate}{}}{}{%
+        \pgfcalendardatetojulian{\mtl@startdate}{\mtl@startjulian}
+        \pgfcalendardatetojulian{\mtl@enddate}{\mtl@endjulian}
+        \mtl@totaldays=\mtl@endjulian
+        \advance\mtl@totaldays by -\mtl@startjulian
+      }%
+    }%
+  }
+  {
+    \end{tikzpicture}
+  }
+
+%    \end{macrocode}
+%
+% \subsection{Position Calculation}
+%
+%    \begin{macrocode}
+% Calculate position based on date
+\newcommand{\mtl@calculateposition}[2]{%
+  % #1 = milestone date
+  % #2 = output macro (x position)
+  \ifnum\mtl@totaldays>0
+    % Date-based positioning
+    \pgfcalendardatetojulian{#1}{\mtl@milestonejulian}
+    \mtl@tempjulian=\mtl@milestonejulian
+    \advance\mtl@tempjulian by -\mtl@startjulian
+    % Now use pgfmath with the smaller relative day number
+    \pgfmathsetmacro{#2}{(\the\mtl@tempjulian / \the\mtl@totaldays) * \mtl@width}
+    % Ensure position is within bounds
+    \ifdim#2pt<0pt \def#2{0}\fi
+    \ifdim#2pt>\mtl@width pt \edef#2{\mtl@width}\fi
+  \else
+    % Automatic positioning (fallback)
+    \stepcounter{mtl@milestonepos}
+    \pgfmathsetmacro{#2}{(\themtl@milestonepos-1)*(\mtl@width/12)}
+  \fi
+}
+
+%    \end{macrocode}
+%
+% \subsection{Drawing Commands}
+%
+%    \begin{macrocode}
+% Internal command to draw milestone above timeline
+\newcommand{\mtl@drawmilestoneabove}[3]{%
+  % #1 = x position
+  % #2 = date
+  % #3 = label
+  \draw (#1,0.1) -- (#1,-0.1);
+  \fill[\mtl@color] (#1,\mtl@milestone@heightabove) circle (\mtl@dotsize);
+  \draw (#1,\mtl@milestone@heightabove) -- (#1,0.1);
+  \node[anchor=south west,align=left,xshift=5pt,inner sep=1pt,rotate=\mtl@rotation] at (#1,\mtl@milestone@heightabove) 
+    {\begin{minipage}{\mtl@labelwidth}\mtl@fontsize\textbf{#3}\\[2pt]#2\end{minipage}};
+  % Reset to default for next milestone
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+}
+
+% Internal command to draw milestone below timeline
+\newcommand{\mtl@drawmilestonebelow}[3]{%
+  % #1 = x position
+  % #2 = date
+  % #3 = label
+  \draw (#1,0.1) -- (#1,-0.1);
+  \fill[\mtl@color] (#1,-\mtl@milestone@heightbelow) circle (\mtl@dotsize);
+  \draw (#1,-\mtl@milestone@heightbelow) -- (#1,-0.1);
+  \node[anchor=north west,align=left,xshift=5pt,inner sep=1pt,rotate=\mtl@rotation] at (#1,-\mtl@milestone@heightbelow) 
+    {\begin{minipage}{\mtl@labelwidth}\mtl@fontsize#3\\[2pt]#2\end{minipage}};
+  % Reset to default for next milestone
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+}
+
+% Internal command to draw highlight milestone above timeline
+\newcommand{\mtl@drawhighlightabove}[3]{%
+  % #1 = x position
+  % #2 = date
+  % #3 = label
+  \draw (#1,0.1) -- (#1,-0.1);
+  \fill[\mtl@highlightcolor] (#1,\mtl@milestone@heightabove) circle (\mtl@dotsize);
+  \draw (#1,\mtl@milestone@heightabove) -- (#1,0.1);
+  \node[anchor=south west,align=left,xshift=5pt,inner sep=1pt,rotate=\mtl@rotation] at (#1,\mtl@milestone@heightabove) 
+    {\begin{minipage}{\mtl@labelwidth}\mtl@fontsize\textbf{#3}\\[2pt]#2\end{minipage}};
+  % Reset to default for next milestone
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+}
+
+% Internal command to draw highlight milestone below timeline
+\newcommand{\mtl@drawhighlightbelow}[3]{%
+  % #1 = x position
+  % #2 = date
+  % #3 = label
+  \draw (#1,0.1) -- (#1,-0.1);
+  \fill[\mtl@highlightcolor] (#1,-\mtl@milestone@heightbelow) circle (\mtl@dotsize);
+  \draw (#1,-\mtl@milestone@heightbelow) -- (#1,-0.1);
+  \node[anchor=north west,align=left,xshift=5pt,inner sep=1pt,rotate=\mtl@rotation] at (#1,-\mtl@milestone@heightbelow) 
+    {\begin{minipage}{\mtl@labelwidth}\mtl@fontsize#3\\[2pt]#2\end{minipage}};
+  % Reset to default for next milestone
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+}
+
+%    \end{macrocode}
+%
+% \subsection{Per-Milestone Options}
+%
+%    \begin{macrocode}
+% Key-value setup for per-milestone options
+\define@key{mtlmilestone}{heightabove}{\edef\mtl@milestone@heightabove{#1}}
+\define@key{mtlmilestone}{heightbelow}{\edef\mtl@milestone@heightbelow{#1}}
+\define@key{mtlmilestone}{height}{\edef\mtl@milestone@heightabove{#1}\edef\mtl@milestone@heightbelow{#1}}
+
+%    \end{macrocode}
+%
+% \subsection{User Commands}
+%
+%    \begin{macrocode}
+% Command to add a milestone with optional height
+% Usage: \milestone[position][height=value]{date}{label}
+\NewDocumentCommand{\milestone}{O{above}O{}mm}{%
+  % Reset to defaults first
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+  % Apply per-milestone options
+  \setkeys{mtlmilestone}{#2}
+  
+  \mtl@calculateposition{#3}{\mtl@xpos}
+  
+  \ifthenelse{\equal{#1}{above}}
+    {%
+      \mtl@drawmilestoneabove{\mtl@xpos}{#3}{#4}%
+    }
+    {%
+      \mtl@drawmilestonebelow{\mtl@xpos}{#3}{#4}%
+    }
+}
+
+% Command for highlighted milestone with optional height
+\NewDocumentCommand{\highlightmilestone}{O{above}O{}mm}{%
+  % Reset to defaults first
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+  % Apply per-milestone options
+  \setkeys{mtlmilestone}{#2}
+  
+  \mtl@calculateposition{#3}{\mtl@xpos}
+  
+  \ifthenelse{\equal{#1}{above}}
+    {%
+      \mtl@drawhighlightabove{\mtl@xpos}{#3}{#4}%
+    }
+    {%
+      \mtl@drawhighlightbelow{\mtl@xpos}{#3}{#4}%
+    }
+}
+
+% Command for manual positioning
+\NewDocumentCommand{\milestoneat}{O{above}O{}mmm}{%
+  % Reset to defaults first
+  \edef\mtl@milestone@heightabove{\mtl@heightabove}
+  \edef\mtl@milestone@heightbelow{\mtl@heightbelow}
+  % Apply per-milestone options
+  \setkeys{mtlmilestone}{#2}
+  
+  \ifthenelse{\equal{#1}{above}}
+    {%
+      \mtl@drawmilestoneabove{#3}{#4}{#5}%
+    }
+    {%
+      \mtl@drawmilestonebelow{#3}{#4}{#5}%
+    }
+}
+
+% Command for title
+\NewDocumentCommand{\timelinetitle}{m}{%
+  \node[anchor=south,font=\sffamily\Large] at (\mtl@width/2,\mtl@heightabove+1) {#1};
+}
+
+% Command to add date markers on timeline
+\NewDocumentCommand{\datemarker}{mm}{%
+  \ifnum\mtl@totaldays>0
+    \pgfcalendardatetojulian{#1}{\mtl@markerjulian}
+    \mtl@tempjulian=\mtl@markerjulian
+    \advance\mtl@tempjulian by -\mtl@startjulian
+    \pgfmathsetmacro{\mtl@markerpos}{(\the\mtl@tempjulian / \the\mtl@totaldays) * \mtl@width}
+    \draw (\mtl@markerpos,0.05) -- (\mtl@markerpos,-0.05);
+    \node[anchor=north,font=\sffamily\small,text=\mtl@color!70] at (\mtl@markerpos,-0.1) {#2};
+  \fi
+}
+
+%</package>
+%    \end{macrocode}
+%
+% \Finale

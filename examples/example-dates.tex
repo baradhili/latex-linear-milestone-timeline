@@ -1,0 +1,25 @@
+\documentclass{article}
+\usepackage{milestonetimeline}
+
+\begin{document}
+\begin{timeline}[
+  width=16,
+  heightabove=1.5,
+  heightbelow=1.5,
+  startdate=2025-01-26,
+  enddate=2025-12-11
+]
+  \timelinetitle{Date-Based Timeline}
+  \milestone[above]{2025-01-26}{Kickoff}
+  \milestone[below]{2025-02-06}{Vendor Selection}
+  \milestone[above]{2025-03-15}{Requirements}
+  \milestone[below]{2025-04-12}{Prototype}
+  \highlightmilestone[above][heightabove=2.5]{2025-09-02}{User Training}
+  \milestone[below]{2025-10-20}{UAT Complete}
+  \milestone[above]{2025-12-01}{Go-Live}
+  
+  \datemarker{2025-04-01}{Apr}
+  \datemarker{2025-08-01}{Aug}
+  \datemarker{2025-12-01}{Dec}
+\end{timeline}
+\end{document}
