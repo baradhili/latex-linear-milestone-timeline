@@ -47,16 +47,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## Installation
 
 ### Option 1: CTAN (Recommended)
+
 ```bash
 # Once published on CTAN, install via your TeX distribution
-tlmgr install dottimeline  # TeX Live
+tlmgr install milestonetimeline # TeX Live
 # or use MiKTeX Console for MiKTeX
 
 ## Usage
 
 ```latex
 \documentclass{article}
-\usepackage{dottimeline}
+\usepackage{milestonetimeline}
 
 \begin{document}
 \begin{timeline}[width=14,startdate=2025-01-01,enddate=2025-12-31]
@@ -77,3 +78,4 @@ Run latex dottimeline.dtx to generate documentation.
 ## Bug Reports
 
 Please report issues at: https://github.com/baradhili/latex-linear-milestone-timeline
+```
